@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Select Role - Commute Carry{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="form-title">Select Your Role</h2>
+    <p class="text-center">Choose how you want to use Commute Carry</p>
+    
+    <form method="POST" action="{{ url_for('role_selection') }}">
+        <div class="role-options">
+            <label class="role-option">
+                <input type="radio" name="role" value="sender" required>
+                <div class="role-content">
+                    <div class="role-icon"><i class="fas fa-box"></i></div>
+                    <h3>Sender</h3>
+                    <p>I want to send parcels using travelers</p>
+                </div>
+            </label>
+            
+            <label class="role-option">
+                <input type="radio" name="role" value="traveler">
+                <div class="role-content">
+                    <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+                    <h3>Traveler</h3>
+                    <p>I want to earn by carrying parcels</p>
+                </div>
+            </label>
+        </div>
+        
+        <div class="text-center">
+            <button type="submit" class="btn">Continue</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

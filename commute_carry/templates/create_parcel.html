@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Create Parcel - Commute Carry{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4"><i class="fas fa-box-open"></i> Create New Parcel</h2>
+    
+    <form method="POST" action="{{ url_for('create_parcel') }}" class="parcel-form" enctype="multipart/form-data">
+        <!-- Section 1: Parcel Details -->
+        <h5 class="section-title"><i class="fas fa-box"></i> Package Information</h5>
+        <div class="form-group">
+            <label for="details">Parcel Contents</label>
+            <textarea id="details" name="details" class="form-control" 
+                      placeholder="Describe what you're sending (e.g., Books, Electronics, Documents...)" 
+                      required rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="length">Length (cm)</label>
+                <input type="number" id="length" name="length" class="form-control" min="1" step="0.1" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="width">Width (cm)</label>
+                <input type="number" id="width" name="width" class="form-control" min="1" step="0.1" required>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="height">Height (cm)</label>
+                <input type="number" id="height" name="height" class="form-control" min="1" step="0.1" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="weight">Weight (grams)</label>
+            <input type="number" id="weight" name="weight" class="form-control" min="1" step="1" required>
+        </div>
+
+        <!-- Section 2: Receiver Information -->
+        <h5 class="section-title mt-4"><i class="fas fa-user"></i> Receiver Details</h5>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="receiver_name">Full Name</label>
+                <input type="text" id="receiver_name" name="receiver_name" class="form-control" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="receiver_phone">Phone Number</label>
+                <input type="tel" id="receiver_phone" name="receiver_phone" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_proof">Receiver ID Proof (Upload)</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="id_proof" name="id_proof" accept="image/*,.pdf">
+                <label class="custom-file-label" for="id_proof">Choose file...</label>
+            </div>
+            <small class="text-muted">Upload government-issued ID (Aadhaar, Passport, etc.)</small>
+        </div>
+
+        <!-- Section 3: Travel Information -->
+        <h5 class="section-title mt-4"><i class="fas fa-map-marked-alt"></i> Travel Details</h5>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="from_location">From (Your Location)</label>
+                <input type="text" id="from_location" name="from_location" class="form-control" 
+                       value="{{ user_location }}" readonly>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="to_location">Destination Address</label>
+                <input type="text" id="to_location" name="to_location" class="form-control" 
+                       placeholder="Enter complete address with PIN code" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="delivery_instructions">Special Instructions</label>
+            <textarea id="delivery_instructions" name="delivery_instructions" class="form-control" 
+                     placeholder="Any special delivery instructions..." rows="2"></textarea>
+        </div>
+
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="terms_agree" required>
+            <label class="form-check-label" for="terms_agree">
+                I agree to the <a href="#" data-toggle="modal" data-target="#termsModal">Terms & Conditions</a>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-paper-plane"></i> Submit Parcel Request
+        </button>
+    </form>
+</div>
+
+<!-- Terms Modal (hidden by default) -->
+<div class="modal fade" id="termsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms & Conditions</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Your terms content here -->
+                <p>By creating this parcel, you agree to our shipping policies...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-title {
+        color: #2c3e50;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+    }
+    .parcel-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .custom-file-label::after {
+        content: "Browse";
+    }
+</style>
+
+<script>
+    // Update file input label
+    document.getElementById('id_proof').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+
+    // Auto-fill location if available
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+                .then(response => response.json())
+                .then(data => {
+                    const address = data.address;
+                    let location = '';
+                    if (address.road) location += address.road + ', ';
+                    if (address.city) location += address.city + ', ';
+                    if (address.state) location += address.state;
+                    document.getElementById('from_location').value = location || "Current Location";
+                });
+        });
+    }
+</script>
+{% endblock %}

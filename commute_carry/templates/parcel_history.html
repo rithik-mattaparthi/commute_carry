@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Parcel History{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2 style="margin-bottom: 20px;"><i class="fas fa-box"></i> My Parcel History</h2>
+
+    {% if parcels %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <thead style="background-color: #f0f0f0;">
+                <tr>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Parcel ID</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Size (L × W × H)</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Weight (kg)</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Status</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Created Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for parcel in parcels %}
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">{{ parcel._id }}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                        {% if parcel.dimensions %}
+                            {{ parcel.dimensions.length|default('-') }} × 
+                            {{ parcel.dimensions.width|default('-') }} × 
+                            {{ parcel.dimensions.height|default('-') }} cm
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                        {% if parcel.weight_grams %}
+                            {{ '%.2f' % (parcel.weight_grams / 1000) }} kg
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">{{ parcel.status|capitalize }}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                        {% if parcel.created_at %}
+                            {{ parcel.created_at.strftime('%Y-%m-%d %H:%M') if parcel.created_at.__class__.__name__ == 'datetime' else parcel.created_at }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p>No parcels found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Available Parcels{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h2>Matching Parcels Based on Your Route</h2>
+    {% if matching_parcels %}
+        <div class="parcel-grid">
+        {% for parcel in matching_parcels %}
+            <div class="parcel-card highlight">
+                <p><strong>From:</strong> {{ parcel.from }}</p>
+                <p><strong>To:</strong> {{ parcel.to }}</p>
+                <p><strong>Weight:</strong> {{ parcel.weight }} kg</p>
+                <p><strong>Sender:</strong> {{ parcel.sender_name }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p>No parcels match your current route.</p>
+    {% endif %}
+</div>
+
+<hr>
+
+<div class="section">
+    <h2>All Available Parcels</h2>
+    <div class="parcel-grid">
+    {% for parcel in all_parcels %}
+        <div class="parcel-card">
+            <p><strong>From:</strong> {{ parcel.from }}</p>
+            <p><strong>To:</strong> {{ parcel.to }}</p>
+            <p><strong>Weight:</strong> {{ parcel.weight }} kg</p>
+            <p><strong>Sender:</strong> {{ parcel.sender_name }}</p>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+<style>
+.parcel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+.parcel-card {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.parcel-card.highlight {
+    border: 2px solid #4caf50;
+    background-color: #eaffea;
+}
+.section {
+    margin-bottom: 32px;
+}
+</style>
+{% endblock %}
